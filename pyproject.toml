@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "amiauia"
+version = "0.1.0"
+description = "A statistical, explainable AI that analyzes files and photos and returns logical solutions."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "AMIAUIA" }]
+keywords = ["ai", "statistics", "photography", "culling", "duplicates", "ransomware", "storage"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: System :: Filesystems",
+]
+dependencies = ["numpy>=1.24", "Pillow>=10.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+amiauia = "amiauia.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["amiauia*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

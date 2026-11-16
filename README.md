@@ -1,98 +1,98 @@
 # AMIAUIA
 
-**Análisis Multivariable Inteligente Aplicado a la Unificación de Imagen y Archivos**
+**Advanced Multivariate Intelligence for Unified Image & Archive analysis**
 
-AMIAUIA es una IA estadística y explicable que analiza tus archivos y fotografías y te devuelve **soluciones lógicas**. Cada respuesta tiene siempre la misma estructura:
+AMIAUIA is a statistical, explainable AI that analyzes your files and photos and gives you **logical solutions**. Every answer follows the same structure:
 
 | | |
 |---|---|
-| **Hallazgo** | Qué ha detectado |
-| **Evidencia** | Los números que lo demuestran |
-| **Confianza** | Lo seguro que está (0–100 %) |
-| **Acción** | Qué hacer a continuación |
+| **Finding** | What it detected |
+| **Evidence** | The numbers that prove it |
+| **Confidence** | How sure it is (0–100 %) |
+| **Action** | What to do next |
 
-Todo el análisis se hace **en tu ordenador**: no se sube ningún archivo y AMIAUIA **nunca borra ni mueve nada** por su cuenta.
-
----
-
-## Qué hace
-
-### 🗂️ Módulo Archivos (informática)
-- **Duplicados exactos** en tres pasos (tamaño → hash parcial → SHA-256 completo) y espacio recuperable.
-- **Reparto del espacio** por tipo de archivo.
-- **Archivos olvidados**: los más grandes (percentil 90) sin modificar desde hace más de un año.
-- **Alerta temprana de ransomware**: archivos de texto modificados en las últimas 24 h cuya entropía de Shannon supera 7,5 bits/byte (aspecto de cifrado) y extensiones típicas de secuestro (`.locked`, `.encrypted`…).
-- **Predicción de capacidad**: regresión lineal sobre mediciones diarias del disco para estimar cuándo se llenará, con un intervalo.
-
-### 📷 Módulo Fotos
-- **Selección automática (culling)**: puntúa cada foto por nitidez (varianza del laplaciano), exposición y luces quemadas, en relación con el resto de la sesión (z-score robusto).
-- **Ráfagas**: agrupa fotos casi iguales mediante hash perceptual (dHash) y hora de la cámara, y se queda con la mejor de cada grupo.
-- **Auditoría técnica de tus hábitos** a partir del EXIF, con contraste estadístico de dos proporciones (p < 0,05):
-  - ¿Fallas más el foco a f/2 o más abierto?
-  - ¿Por debajo de la velocidad 1/focal?
-  - ¿Con ISO 3200 o más?
-  - ¿Con un objetivo concreto?
-
-Ejemplo de resultado:
-
-```
-🟠 [MEDIA] [fotos] Con el objetivo 85mm F1.4: 31 % de fotos desenfocadas frente a 9 % en el resto
-   Confianza: 99%
-   · fotos_condicion: 412
-   · intervalo95_condicion: [26.8, 35.6]
-   · p_valor: 0.0001
-   → Acción: Calibra el microajuste de enfoque de este objetivo o revisa su estado.
-```
+All analysis runs **on your own computer**: no file is uploaded, and AMIAUIA **never deletes or moves anything** on its own.
 
 ---
 
-## Instalación
+## What it does
 
-Requiere Python 3.10 o superior.
+### 🗂️ Files module (IT)
+- **Exact duplicates** in three passes (size → partial hash → full SHA-256) and the space you can recover.
+- **Space breakdown** by file type.
+- **Stale files**: the largest files (90th percentile) not modified for over a year.
+- **Early ransomware warning**: text files modified in the last 24 h whose Shannon entropy exceeds 7.5 bits/byte (they look encrypted), plus typical ransom extensions (`.locked`, `.encrypted`…).
+- **Capacity forecast**: linear regression over daily disk measurements to estimate when the disk will be full, with an interval.
+
+### 📷 Photos module
+- **Automatic culling**: scores each photo by sharpness (Laplacian variance), exposure and blown highlights, relative to the rest of the session (robust z-score).
+- **Bursts**: groups near-identical shots using a perceptual hash (dHash) and camera time, and keeps the best one of each group.
+- **Technical audit of your shooting habits** from EXIF data, using a two-proportion statistical test (p < 0.05):
+  - Do you miss focus more at f/2 or wider?
+  - Below the 1/focal-length shutter speed?
+  - At ISO 3200 or higher?
+  - With a specific lens?
+
+Example output:
+
+```
+🟠 [MEDIUM] [photos] With the 85mm F1.4 lens: 31 % out-of-focus shots vs 9 % otherwise
+   Confidence: 99%
+   · photos_condition: 412
+   · ci95_condition: [26.8, 35.6]
+   · p_value: 0.0001
+   → Action: Calibrate this lens's AF micro-adjustment or have it checked.
+```
+
+---
+
+## Installation
+
+Requires Python 3.10 or later.
 
 ```bash
-git clone https://github.com/TU_USUARIO/amiauia.git
+git clone https://github.com/YOUR_USERNAME/amiauia.git
 cd amiauia
 pip install -e .
 ```
 
-## Uso
+## Usage
 
 ```bash
-# Archivos: duplicados, espacio, olvidados y ransomware
-amiauia archivos /ruta/a/tu/disco
+# Files: duplicates, space, stale files and ransomware
+amiauia files /path/to/your/drive
 
-# Fotos: selección, ráfagas, exposición y auditoría EXIF
-amiauia fotos /ruta/a/la/sesion --seleccion elegidas.txt
+# Photos: culling, bursts, exposure and EXIF audit
+amiauia photos /path/to/session --selection keepers.txt
 
-# Capacidad: ejecútalo a diario (por ejemplo con cron o el Programador de tareas)
-amiauia capacidad /
+# Capacity: run it daily (e.g. with cron or Task Scheduler)
+amiauia capacity /
 
-# Todo a la vez, con informes
-amiauia todo /ruta --json informe.json --md informe.md
+# Everything at once, with reports
+amiauia all /path --json report.json --md report.md
 ```
 
-Opciones comunes: `--json FICHERO`, `--md FICHERO`, `--ocultos` (incluye archivos ocultos).
+Common options: `--json FILE`, `--md FILE`, `--hidden` (include hidden files).
 
-> En esta versión el módulo de fotos analiza JPEG, PNG, TIFF, WebP y BMP. Los RAW se cuentan como archivos, pero no se analizan todavía (ver hoja de ruta).
+> In this version the photos module analyzes JPEG, PNG, TIFF, WebP and BMP. RAW files are counted as files but not analyzed yet (see roadmap).
 
 ---
 
-## Arquitectura
+## Architecture
 
 ```
 amiauia/
-├── scanner.py         # Ingesta: recorre carpetas, hashes, entropía
-├── stats.py           # Motor estadístico propio (z robusto, regresión, Wilson, test de proporciones, entropía)
-├── files_analysis.py  # Módulo Archivos
-├── capacity.py        # Predicción de capacidad
-├── photo_analysis.py  # Módulo Fotos
-├── findings.py        # Estructura Hallazgo / Evidencia / Confianza / Acción
-├── report.py          # Salida en consola, JSON y Markdown
-└── cli.py             # Línea de comandos
+├── scanner.py         # Ingestion: folder walking, hashes, entropy
+├── stats.py           # Home-grown statistical engine (robust z, regression, Wilson, proportion test, entropy)
+├── files_analysis.py  # Files module
+├── capacity.py        # Capacity forecasting
+├── photo_analysis.py  # Photos module
+├── findings.py        # Finding / Evidence / Confidence / Action structure
+├── report.py          # Console, JSON and Markdown output
+└── cli.py             # Command line
 ```
 
-El motor estadístico está escrito desde cero con la biblioteca estándar de Python; solo se usan `numpy` y `Pillow` para leer y procesar imágenes.
+The statistical engine is written from scratch using the Python standard library; only `numpy` and `Pillow` are used to read and process images.
 
 ## Tests
 
@@ -101,21 +101,21 @@ pip install -e ".[dev]"
 pytest
 ```
 
-GitHub Actions ejecuta los tests en Linux, Windows y macOS en cada *push*.
+GitHub Actions runs the tests on Linux, Windows and macOS on every push.
 
 ---
 
-## Hoja de ruta
+## Roadmap
 
-- [ ] Lectura de RAW (vista previa embebida) y HEIC
-- [ ] Detección de ojos cerrados y caras
-- [ ] Duplicados visuales entre discos (no solo exactos)
-- [ ] Comparación de origen y copia de seguridad
-- [ ] Vigilancia en tiempo real para ransomware
-- [ ] Explicaciones en lenguaje natural con un modelo local
-- [ ] Interfaz de escritorio y plugin para Lightroom
-- [ ] API para integradores
+- [ ] RAW (embedded preview) and HEIC support
+- [ ] Closed-eye and face detection
+- [ ] Visual (not just exact) duplicates across drives
+- [ ] Source vs. backup comparison
+- [ ] Real-time ransomware monitoring
+- [ ] Natural-language explanations with a local model
+- [ ] Desktop app and Lightroom plugin
+- [ ] API for integrators
 
-## Licencia
+## License
 
-MIT. Consulta [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
